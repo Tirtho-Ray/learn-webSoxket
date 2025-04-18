@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Learn Web Socket</title>
+</head>
+<body>
+  <h1>Real Time Chat</h1>
+  <ul id="message"></ul>
+  <form id="input">
+    <input id="mesinput" type="text" autocomplete="off" />
+    <button type="submit">Send</button>
+  </form>
+
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+  <script>
+    const socket = io("http://localhost:3000");
+    const mesInput = document.getElementById("mesinput");
+    const messageList = document.getElementById("message");
+    const form = document.getElementById("input");
+
+    // send message on form submit
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      const msg = mesInput.value.trim();
+      if (msg) {
+        socket.emit("chat message", msg);
+        mesInput.value = "";
+      }
+    });
+
+    // receive and show message
+    socket.on("chat message", (msg) => {
+      const li = document.createElement("li");
+      li.textContent = msg;
+      messageList.appendChild(li);
+    });
+  </script>
+</body>
+</html>
