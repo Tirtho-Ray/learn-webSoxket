@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Username Chat</title>
+</head>
+<body>
+  <h1>Real-time Chat with Username</h1>
+
+  <input type="text" id="username" placeholder="Enter your name" />
+  <ul id="message"></ul>
+  
+  <form id="input">
+    <input id="mesinput" type="text" autocomplete="off" placeholder="Enter message..." />
+    <button>Send</button>
+  </form>
+
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+  <script>
+    const socket = io("http://localhost:3000");
+    const mesInput = document.getElementById("mesinput");
+    const message = document.getElementById("message");
+    const form = document.getElementById("input");
+    const usernameInput = document.getElementById("username");
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const msg = mesInput.value;
+      const username = usernameInput.value || "Anonymous";
+
+      if (msg.trim() !== "") {
+        socket.emit("chat message", { username, msg });
+        mesInput.value = "";
+      }
+    });
+
+    socket.on("chat message", (data) => {
+      const li = document.createElement("li");
+      li.textContent = `${data.username}: ${data.msg}`;
+      message.appendChild(li);
+    });
+  </script>
+</body>
+</html>
