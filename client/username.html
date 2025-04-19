@@ -16,29 +16,45 @@
   </form>
 
   <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
-  <script>
+  <!-- আগের html এর মধ্যে শুধু নিচের script টুকু update করো -->
+<script>
     const socket = io("http://localhost:3000");
     const mesInput = document.getElementById("mesinput");
     const message = document.getElementById("message");
     const form = document.getElementById("input");
     const usernameInput = document.getElementById("username");
-
+  
+    let username = "";
+  
+    usernameInput.addEventListener("change", () => {
+      username = usernameInput.value || "Anonymous";
+      socket.emit("user joined", username); // 🔥 join event পাঠানো হচ্ছে
+    });
+  
     form.addEventListener("submit", (e) => {
       e.preventDefault();
       const msg = mesInput.value;
-      const username = usernameInput.value || "Anonymous";
-
+  
       if (msg.trim() !== "") {
         socket.emit("chat message", { username, msg });
         mesInput.value = "";
       }
     });
-
+  
     socket.on("chat message", (data) => {
       const li = document.createElement("li");
       li.textContent = `${data.username}: ${data.msg}`;
       message.appendChild(li);
     });
+  
+    socket.on("notification", (text) => {
+      const li = document.createElement("li");
+      li.textContent = text;
+      li.style.color = "gray";
+      li.style.fontStyle = "italic";
+      message.appendChild(li);
+    });
   </script>
+  
 </body>
 </html>
